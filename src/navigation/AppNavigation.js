@@ -5,7 +5,7 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import { AppHeaderIcon } from '../components/AppHeaderIcon'
-import { Platform, Text } from 'react-native';
+import { Platform, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { MainScreen } from '../screens/MainScreen'
 import { PostScreen } from '../screens/PostScreen'
@@ -52,6 +52,7 @@ function RootStackNavigator() {
 
           const booked = route.params?.booked ?? false
           const iconName = booked ? 'ios-star' : 'ios-star-outline'
+          const toggleHandler = route.params?.toggleHandler
 
           return {
             headerTitle: 'Post №' + route.params?.postId + ' Date: ' + new Date(route.params?.date).toLocaleDateString(),
@@ -59,7 +60,7 @@ function RootStackNavigator() {
             headerStyle: { backgroundColor: 'red' },
             headerRight: (props) => (
               <HeaderButtons HeaderButtonComponent={AppHeaderIcon}>
-                <Item title='Take photo' iconName={iconName} onPress={() => console.log('Press ios-star')} />
+                <Item title='Take photo' iconName={iconName} onPress={() => toggleHandler()} />
               </HeaderButtons>
             ),
           }

@@ -1,13 +1,32 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { View, Text, StyleSheet, Image, Button, ScrollView, Alert } from 'react-native';
-import { DATA } from '../data';
+import { useDispatch, useSelector } from 'react-redux'
+import { removePost, toggleBooked } from '../store/actions/post';
 import { THEME } from '../theme'
 
 export const PostScreen = ({ navigation, route }) => {
+  const dispatch = useDispatch()
+
   const postId = route.params?.postId ?? 'default postId';
   const date = route.params?.date ?? 'default date';
 
-  const post = DATA.find(p => p.id === postId)
+  const post = useSelector(state => state.post.allPosts.find(p => p.id === postId))
+
+  const booked = useSelector(state => state.post.bookedPosts.some(post => post.id === postId))
+
+  useEffect(() => {
+    navigation.setParams({ booked })
+  }, [booked])
+
+  const toggleHandler = useCallback(() => {
+    dispatch(toggleBooked(postId))
+  }, [dispatch, postId])
+
+  useEffect(() => {
+    navigation.setParams({ toggleHandler })
+  }, [toggleHandler])
+
+
 
   const removeHandler = () => {
     Alert.alert(
@@ -18,12 +37,19 @@ export const PostScreen = ({ navigation, route }) => {
           text: 'Cancel',
           style: 'cancel'
         },
-        { text: 'Delete', style: 'destructive', onPress: () => console.log('OK Pressed') }
+        {
+          text: 'Delete', style: 'destructive', onPress: () => {
+            navigation.navigate('Main')
+            dispatch(removePost(postId))
+          }
+        }
       ],
       { cancelable: false }
     );
   }
-
+  if (!post) {
+    return null;
+  }
   return (
     <ScrollView>
       <Image source={{ uri: post.img }} style={styles.image} />
